@@ -5,8 +5,9 @@ import {
   useEdgesState,
   useNodesState,
   type Connection,
+  type Edge,
 } from '@xyflow/react'
-import { Database, PencilLine, Workflow } from 'lucide-react'
+import { Database, Link2, PencilLine, Trash2, Workflow } from 'lucide-react'
 import { useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
@@ -32,7 +33,7 @@ import type { FunnelStageType } from '@/features/funnel/types'
 const baseItems = [
   'Seleção de etapa direto no canvas.',
   'Edição lateral sem recriar o nó.',
-  'Atualização imediata do estado.',
+  'Exclusão de etapa e conexão com confirmação.',
 ]
 
 export default function App() {
@@ -41,8 +42,19 @@ export default function App() {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(
     initialNodes[0]?.id ?? null,
   )
+  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null)
 
   const selectedNode = nodes.find((node) => node.id === selectedNodeId) ?? null
+  const selectedEdge = edges.find((edge) => edge.id === selectedEdgeId) ?? null
+
+  const displayedEdges: Edge[] = edges.map((edge) => ({
+    ...edge,
+    animated: edge.id === selectedEdgeId,
+    style:
+      edge.id === selectedEdgeId
+        ? { stroke: '#A06CD5', strokeWidth: 4 }
+        : undefined,
+  }))
 
   const handleValidateConnection = (
     connection: Connection | { source: string | null; target: string | null },
@@ -73,6 +85,7 @@ export default function App() {
         index: currentNodes.length,
       })
 
+      setSelectedEdgeId(null)
       setSelectedNodeId(newNode.id)
 
       return [...currentNodes, newNode]
@@ -131,6 +144,44 @@ export default function App() {
     }))
   }
 
+  const handleDeleteSelectedNode = () => {
+    if (!selectedNode) {
+      return
+    }
+
+    const confirmed = window.confirm(
+      `Remover a etapa "${selectedNode.data.title}" e suas conexões?`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    setNodes((currentNodes) => currentNodes.filter((node) => node.id !== selectedNode.id))
+    setEdges((currentEdges) =>
+      currentEdges.filter(
+        (edge) => edge.source !== selectedNode.id && edge.target !== selectedNode.id,
+      ),
+    )
+    setSelectedNodeId(null)
+    setSelectedEdgeId(null)
+  }
+
+  const handleDeleteSelectedEdge = () => {
+    if (!selectedEdge) {
+      return
+    }
+
+    const confirmed = window.confirm('Remover a conexão selecionada?')
+
+    if (!confirmed) {
+      return
+    }
+
+    setEdges((currentEdges) => currentEdges.filter((edge) => edge.id !== selectedEdge.id))
+    setSelectedEdgeId(null)
+  }
+
   return (
     <ReactFlowProvider>
       <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
@@ -145,7 +196,7 @@ export default function App() {
                 Editor visual
               </h1>
               <p className="max-w-2xl text-sm leading-6 text-primary-foreground/88">
-                Selecione uma etapa no fluxo para editar nome, tipo e métricas.
+                Selecione uma etapa ou conexão para editar e remover com clareza.
               </p>
             </div>
           </div>
@@ -187,13 +238,19 @@ export default function App() {
             <Card className="bg-[#ffcf56]">
               <CardHeader className="space-y-3">
                 <div className="flex items-center gap-2 text-foreground">
-                  <PencilLine className="size-4 text-accent" />
-                  <CardTitle>Editar etapa</CardTitle>
+                  {selectedEdge ? (
+                    <Link2 className="size-4 text-accent" />
+                  ) : (
+                    <PencilLine className="size-4 text-accent" />
+                  )}
+                  <CardTitle>{selectedEdge ? 'Editar conexão' : 'Editar etapa'}</CardTitle>
                 </div>
                 <CardDescription>
                   {selectedNode
                     ? 'Altere os dados da etapa selecionada.'
-                    : 'Selecione um nó no canvas para editar.'}
+                    : selectedEdge
+                      ? 'Revise ou remova a conexão selecionada.'
+                      : 'Selecione um nó ou conexão no canvas.'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -256,10 +313,48 @@ export default function App() {
                         </div>
                       ))}
                     </div>
+
+                    <Button
+                      className="w-full bg-[#f04438] text-white"
+                      onClick={handleDeleteSelectedNode}
+                    >
+                      <Trash2 className="mr-2 size-4" />
+                      Remover etapa
+                    </Button>
+                  </>
+                ) : selectedEdge ? (
+                  <>
+                    <div className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-4 text-sm text-foreground">
+                      <span className="block text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                        Origem
+                      </span>
+                      <strong className="mt-1 block text-base font-bold">
+                        {nodes.find((node) => node.id === selectedEdge.source)?.data.title ??
+                          selectedEdge.source}
+                      </strong>
+                    </div>
+
+                    <div className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-4 text-sm text-foreground">
+                      <span className="block text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                        Destino
+                      </span>
+                      <strong className="mt-1 block text-base font-bold">
+                        {nodes.find((node) => node.id === selectedEdge.target)?.data.title ??
+                          selectedEdge.target}
+                      </strong>
+                    </div>
+
+                    <Button
+                      className="w-full bg-[#f04438] text-white"
+                      onClick={handleDeleteSelectedEdge}
+                    >
+                      <Trash2 className="mr-2 size-4" />
+                      Remover conexão
+                    </Button>
                   </>
                 ) : (
                   <div className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-5 text-sm text-foreground">
-                    Clique em uma etapa do funil para abrir a edição.
+                    Clique em uma etapa para editar ou em uma conexão para remover.
                   </div>
                 )}
               </CardContent>
@@ -314,20 +409,30 @@ export default function App() {
               <div className="space-y-1">
                 <CardTitle>Fluxo</CardTitle>
                 <CardDescription>
-                  Clique em uma etapa para abrir a edição lateral.
+                  Clique em uma etapa para editar ou em uma conexão para remover.
                 </CardDescription>
               </div>
             </CardHeader>
             <CardContent className="h-[560px] p-0">
               <FunnelCanvas
-                edges={edges}
+                edges={displayedEdges}
                 isValidConnection={handleValidateConnection}
                 nodes={nodes}
                 onConnect={handleConnect}
+                onEdgeClick={(_, edge) => {
+                  setSelectedNodeId(null)
+                  setSelectedEdgeId(edge.id)
+                }}
                 onEdgesChange={onEdgesChange}
-                onNodeClick={(_, node) => setSelectedNodeId(node.id)}
+                onNodeClick={(_, node) => {
+                  setSelectedEdgeId(null)
+                  setSelectedNodeId(node.id)
+                }}
                 onNodesChange={onNodesChange}
-                onPaneClick={() => setSelectedNodeId(null)}
+                onPaneClick={() => {
+                  setSelectedNodeId(null)
+                  setSelectedEdgeId(null)
+                }}
               />
             </CardContent>
           </Card>

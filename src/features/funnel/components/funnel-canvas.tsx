@@ -4,6 +4,7 @@ import {
   Controls,
   MiniMap,
   ReactFlow,
+  type EdgeMouseHandler,
   type IsValidConnection,
   type Connection,
   type Edge,
@@ -24,6 +25,7 @@ type FunnelCanvasProps = {
   edges: Edge[]
   isValidConnection: IsValidConnection<Edge>
   nodes: FunnelStageNode[]
+  onEdgeClick: EdgeMouseHandler<Edge>
   onNodeClick: NodeMouseHandler<FunnelStageNode>
   onConnect: (connection: Connection) => void
   onEdgesChange: (changes: EdgeChange[]) => void
@@ -35,6 +37,7 @@ export function FunnelCanvas({
   edges,
   isValidConnection,
   nodes,
+  onEdgeClick,
   onNodeClick,
   onConnect,
   onEdgesChange,
@@ -55,6 +58,7 @@ export function FunnelCanvas({
         minZoom={0.5}
         nodeTypes={nodeTypes}
         nodes={nodes}
+        onEdgeClick={onEdgeClick}
         onNodeClick={onNodeClick}
         onConnect={onConnect}
         onEdgesChange={onEdgesChange}
