@@ -3,6 +3,13 @@
 ## Objetivo
 Desenvolver um funil de campanhas de tráfego pago usando React Flow para representar o fluxo, shadcn/ui para os componentes da interface.
 
+## Como rodar
+
+```bash
+npm install
+npm run dev
+```
+
 ## Requisitos Funcionais
 
 A aplicação deve permitir que o usuário:
