@@ -26,18 +26,35 @@ const nextStepItems = [
 export default function App() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-      <section className="neo-panel grid gap-5 rounded-[28px] bg-primary p-5 text-primary-foreground xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
-        <div className="space-y-3">
-          <h1 className="max-w-4xl font-display text-4xl leading-[0.95] tracking-[0.01em] text-primary-foreground sm:text-5xl lg:text-6xl">
-            Funil visual de campanhas.
-          </h1>
-          <p className="max-w-2xl text-sm leading-6 text-primary-foreground/88 sm:text-base">
-            Estrutura inicial com canvas, componentes base e tema visual já
-            definidos.
-          </p>
+      <header className="neo-panel flex flex-col gap-4 rounded-[28px] bg-primary p-5 text-primary-foreground lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge className="bg-[#ffcf56] text-[#062726]">TWR</Badge>
+            <Badge className="bg-[#fff6ec] text-[#102b3f]">Funil de campanhas</Badge>
+          </div>
+          <div className="space-y-1">
+            <h1 className="font-display text-3xl leading-none tracking-[0.01em] sm:text-4xl">
+              Editor visual
+            </h1>
+            <p className="max-w-2xl text-sm leading-6 text-primary-foreground/88">
+              Layout base com toolbar, área de apoio e canvas principal.
+            </p>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-3 text-[#102b3f]">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.12em]">
+              Etapas
+            </span>
+            <strong className="block text-xl font-bold">5</strong>
+          </div>
+          <div className="neo-inset rounded-[18px] bg-[#ffcf56] px-4 py-3 text-[#062726]">
+            <span className="block text-[11px] font-bold uppercase tracking-[0.12em]">
+              Conexões
+            </span>
+            <strong className="block text-xl font-bold">4</strong>
+          </div>
           <Button className="bg-[#ffcf56] text-[#062726]" disabled>
             Adicionar etapa
           </Button>
@@ -45,7 +62,7 @@ export default function App() {
             Salvar localmente
           </Button>
         </div>
-      </section>
+      </header>
 
       <section className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
         <div className="grid gap-4">
