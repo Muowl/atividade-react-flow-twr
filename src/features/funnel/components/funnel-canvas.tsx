@@ -4,6 +4,7 @@ import {
   Controls,
   MiniMap,
   ReactFlow,
+  type IsValidConnection,
   type Connection,
   type Edge,
   type NodeChange,
@@ -20,6 +21,7 @@ const nodeTypes = {
 
 type FunnelCanvasProps = {
   edges: Edge[]
+  isValidConnection: IsValidConnection<Edge>
   nodes: FunnelStageNode[]
   onConnect: (connection: Connection) => void
   onEdgesChange: (changes: EdgeChange[]) => void
@@ -28,6 +30,7 @@ type FunnelCanvasProps = {
 
 export function FunnelCanvas({
   edges,
+  isValidConnection,
   nodes,
   onConnect,
   onEdgesChange,
@@ -43,6 +46,7 @@ export function FunnelCanvas({
           animated: false,
         }}
         edges={edges}
+        isValidConnection={isValidConnection}
         minZoom={0.5}
         nodeTypes={nodeTypes}
         nodes={nodes}

@@ -24,6 +24,7 @@ import {
   stageDefinitions,
 } from '@/features/funnel/data/stage-catalog'
 import { initialEdges, initialNodes } from '@/features/funnel/data/initial-elements'
+import { isValidFunnelConnection } from '@/features/funnel/lib/connection-validation'
 import type { FunnelStageType } from '@/features/funnel/types'
 
 const baseItems = [
@@ -42,7 +43,14 @@ export default function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
+  const handleValidateConnection = (connection: Connection | { source: string | null; target: string | null }) =>
+    isValidFunnelConnection(connection, edges)
+
   const handleConnect = (connection: Connection) => {
+    if (!handleValidateConnection(connection)) {
+      return
+    }
+
     setEdges((currentEdges) =>
       addEdge(
         {
@@ -199,6 +207,7 @@ export default function App() {
             <CardContent className="h-[560px] p-0">
               <FunnelCanvas
                 edges={edges}
+                isValidConnection={handleValidateConnection}
                 nodes={nodes}
                 onConnect={handleConnect}
                 onEdgesChange={onEdgesChange}
