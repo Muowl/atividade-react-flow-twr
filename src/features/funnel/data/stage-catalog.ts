@@ -1,4 +1,5 @@
 import type {
+  FunnelStageData,
   FunnelStageDefinition,
   FunnelStageMetric,
   FunnelStageNode,
@@ -111,13 +112,32 @@ function buildMetrics(
   definition: FunnelStageDefinition,
   index: number,
   overrideMetrics?: string[],
-) {
+): FunnelStageMetric[] {
   return definition.metrics.map((metric, metricIndex) => ({
     label: metric.label,
     value:
       overrideMetrics?.[metricIndex] ??
       metric.sampleValues[index % metric.sampleValues.length],
-  })) satisfies FunnelStageMetric[]
+  }))
+}
+
+export function createStageData(
+  stageType: FunnelStageType,
+  index: number,
+  options?: {
+    title?: string
+    metrics?: string[]
+  },
+): FunnelStageData {
+  const definition = stageDefinitions[stageType]
+
+  return {
+    stageType,
+    title: options?.title ?? definition.label,
+    kind: definition.kind,
+    accent: definition.accent,
+    metrics: buildMetrics(definition, index, options?.metrics),
+  }
 }
 
 export function createStageNode(
@@ -137,14 +157,11 @@ export function createStageNode(
       x: definition.canvasX,
       y: options.positionY ?? 360 + stackedRow * 190,
     },
-    data: {
-      stageType,
+    data: createStageData(stageType, options.index, {
       title:
         options.title ??
         (stageCount > 1 ? `${definition.label} ${stageCount}` : definition.label),
-      kind: definition.kind,
-      accent: definition.accent,
-      metrics: buildMetrics(definition, options.index, options.metrics),
-    },
+      metrics: options.metrics,
+    }),
   } satisfies FunnelStageNode
 }

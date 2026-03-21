@@ -6,7 +6,8 @@ import {
   useNodesState,
   type Connection,
 } from '@xyflow/react'
-import { Activity, Database, Workflow } from 'lucide-react'
+import { Database, PencilLine, Workflow } from 'lucide-react'
+import { useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -20,6 +21,7 @@ import {
 import { FunnelCanvas } from '@/features/funnel/components/funnel-canvas'
 import {
   creatableStageTypes,
+  createStageData,
   createStageNode,
   stageDefinitions,
 } from '@/features/funnel/data/stage-catalog'
@@ -28,23 +30,23 @@ import { isValidFunnelConnection } from '@/features/funnel/lib/connection-valida
 import type { FunnelStageType } from '@/features/funnel/types'
 
 const baseItems = [
-  'React 19 com TypeScript e Vite.',
-  'Canvas com React Flow.',
-  'Adição dinâmica de etapas.',
-]
-
-const nextStepItems = [
-  'editar informações de cada etapa',
-  'persistir o estado no navegador',
-  'permitir remoção de etapas e conexões',
+  'Seleção de etapa direto no canvas.',
+  'Edição lateral sem recriar o nó.',
+  'Atualização imediata do estado.',
 ]
 
 export default function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(
+    initialNodes[0]?.id ?? null,
+  )
 
-  const handleValidateConnection = (connection: Connection | { source: string | null; target: string | null }) =>
-    isValidFunnelConnection(connection, edges)
+  const selectedNode = nodes.find((node) => node.id === selectedNodeId) ?? null
+
+  const handleValidateConnection = (
+    connection: Connection | { source: string | null; target: string | null },
+  ) => isValidFunnelConnection(connection, edges)
 
   const handleConnect = (connection: Connection) => {
     if (!handleValidateConnection(connection)) {
@@ -66,12 +68,67 @@ export default function App() {
   }
 
   const handleAddStage = (stageType: FunnelStageType) => {
-    setNodes((currentNodes) => [
-      ...currentNodes,
-      createStageNode(stageType, currentNodes, {
+    setNodes((currentNodes) => {
+      const newNode = createStageNode(stageType, currentNodes, {
         index: currentNodes.length,
-      }),
-    ])
+      })
+
+      setSelectedNodeId(newNode.id)
+
+      return [...currentNodes, newNode]
+    })
+  }
+
+  const updateSelectedNode = (
+    callback: (node: (typeof nodes)[number]) => (typeof nodes)[number],
+  ) => {
+    if (!selectedNodeId) {
+      return
+    }
+
+    setNodes((currentNodes) =>
+      currentNodes.map((node) => (node.id === selectedNodeId ? callback(node) : node)),
+    )
+  }
+
+  const handleSelectedNodeNameChange = (value: string) => {
+    updateSelectedNode((node) => ({
+      ...node,
+      data: {
+        ...node.data,
+        title: value,
+      },
+    }))
+  }
+
+  const handleSelectedNodeTypeChange = (nextType: FunnelStageType) => {
+    updateSelectedNode((node) => {
+      const nextData = createStageData(nextType, 0, {
+        title: node.data.title,
+        metrics: node.data.metrics.map((metric) => metric.value),
+      })
+
+      return {
+        ...node,
+        position: {
+          ...node.position,
+          x: stageDefinitions[nextType].canvasX,
+        },
+        data: nextData,
+      }
+    })
+  }
+
+  const handleSelectedMetricChange = (metricIndex: number, value: string) => {
+    updateSelectedNode((node) => ({
+      ...node,
+      data: {
+        ...node.data,
+        metrics: node.data.metrics.map((metric, currentIndex) =>
+          currentIndex === metricIndex ? { ...metric, value } : metric,
+        ),
+      },
+    }))
   }
 
   return (
@@ -88,8 +145,7 @@ export default function App() {
                 Editor visual
               </h1>
               <p className="max-w-2xl text-sm leading-6 text-primary-foreground/88">
-                Adicione novas etapas e monte a estrutura inicial do funil
-                direto no canvas.
+                Selecione uma etapa no fluxo para editar nome, tipo e métricas.
               </p>
             </div>
           </div>
@@ -126,8 +182,89 @@ export default function App() {
           </div>
         </header>
 
-        <section className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
+        <section className="grid gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
           <div className="grid gap-4">
+            <Card className="bg-[#ffcf56]">
+              <CardHeader className="space-y-3">
+                <div className="flex items-center gap-2 text-foreground">
+                  <PencilLine className="size-4 text-accent" />
+                  <CardTitle>Editar etapa</CardTitle>
+                </div>
+                <CardDescription>
+                  {selectedNode
+                    ? 'Altere os dados da etapa selecionada.'
+                    : 'Selecione um nó no canvas para editar.'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {selectedNode ? (
+                  <>
+                    <div className="space-y-2">
+                      <label
+                        className="block text-[11px] font-bold uppercase tracking-[0.12em] text-foreground"
+                        htmlFor="stage-name"
+                      >
+                        Nome
+                      </label>
+                      <input
+                        id="stage-name"
+                        className="neo-field"
+                        value={selectedNode.data.title}
+                        onChange={(event) => handleSelectedNodeNameChange(event.target.value)}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        className="block text-[11px] font-bold uppercase tracking-[0.12em] text-foreground"
+                        htmlFor="stage-type"
+                      >
+                        Tipo
+                      </label>
+                      <select
+                        id="stage-type"
+                        className="neo-field"
+                        value={selectedNode.data.stageType}
+                        onChange={(event) =>
+                          handleSelectedNodeTypeChange(event.target.value as FunnelStageType)
+                        }
+                      >
+                        {Object.values(stageDefinitions).map((definition) => (
+                          <option key={definition.type} value={definition.type}>
+                            {definition.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-3">
+                      <span className="block text-[11px] font-bold uppercase tracking-[0.12em] text-foreground">
+                        Métricas
+                      </span>
+                      {selectedNode.data.metrics.map((metric, index) => (
+                        <div key={`${selectedNode.id}-${metric.label}`} className="space-y-2">
+                          <label className="block text-xs font-medium text-muted-foreground">
+                            {metric.label}
+                          </label>
+                          <input
+                            className="neo-field"
+                            value={metric.value}
+                            onChange={(event) =>
+                              handleSelectedMetricChange(index, event.target.value)
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-5 text-sm text-foreground">
+                    Clique em uma etapa do funil para abrir a edição.
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             <Card className="bg-secondary">
               <CardHeader className="space-y-3">
                 <div className="flex items-center gap-2 text-primary">
@@ -148,29 +285,6 @@ export default function App() {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#ffcf56]">
-              <CardHeader className="space-y-3">
-                <div className="flex items-center gap-2 text-foreground">
-                  <Activity className="size-4 text-accent" />
-                  <CardTitle>Próximos passos</CardTitle>
-                </div>
-                <CardDescription>Itens previstos para a próxima etapa.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm text-muted-foreground">
-                {nextStepItems.map((item, index) => (
-                  <div
-                    key={item}
-                    className="neo-inset flex items-center gap-3 rounded-[18px] bg-[#fff6ec] px-4 py-3 text-foreground"
-                  >
-                    <span className="flex size-8 items-center justify-center rounded-[12px] border-[3px] border-[color:var(--color-ink)] bg-accent font-bold text-accent-foreground">
-                      0{index + 5}
-                    </span>
-                    <span className="capitalize">{item}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
             <Card className="bg-[#d7eced]">
               <CardHeader className="space-y-3">
                 <div className="flex items-center gap-2 text-foreground">
@@ -178,17 +292,17 @@ export default function App() {
                   <CardTitle>Tipos de etapa</CardTitle>
                 </div>
                 <CardDescription>
-                  Etapas disponíveis para criação nesta fase.
+                  Etapas disponíveis para criação e edição.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-2">
-                {creatableStageTypes.map((stageType) => (
+                {Object.values(stageDefinitions).map((definition) => (
                   <Badge
-                    key={stageType}
+                    key={definition.type}
                     variant="secondary"
                     className="bg-[#fff6ec] text-foreground"
                   >
-                    {stageDefinitions[stageType].label}
+                    {definition.label}
                   </Badge>
                 ))}
               </CardContent>
@@ -200,7 +314,7 @@ export default function App() {
               <div className="space-y-1">
                 <CardTitle>Fluxo</CardTitle>
                 <CardDescription>
-                  Exemplo inicial com etapas comuns de um funil.
+                  Clique em uma etapa para abrir a edição lateral.
                 </CardDescription>
               </div>
             </CardHeader>
@@ -211,7 +325,9 @@ export default function App() {
                 nodes={nodes}
                 onConnect={handleConnect}
                 onEdgesChange={onEdgesChange}
+                onNodeClick={(_, node) => setSelectedNodeId(node.id)}
                 onNodesChange={onNodesChange}
+                onPaneClick={() => setSelectedNodeId(null)}
               />
             </CardContent>
           </Card>

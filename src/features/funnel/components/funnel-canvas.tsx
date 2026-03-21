@@ -9,6 +9,7 @@ import {
   type Edge,
   type NodeChange,
   type EdgeChange,
+  type NodeMouseHandler,
   type NodeTypes,
 } from '@xyflow/react'
 
@@ -23,18 +24,22 @@ type FunnelCanvasProps = {
   edges: Edge[]
   isValidConnection: IsValidConnection<Edge>
   nodes: FunnelStageNode[]
+  onNodeClick: NodeMouseHandler<FunnelStageNode>
   onConnect: (connection: Connection) => void
   onEdgesChange: (changes: EdgeChange[]) => void
   onNodesChange: (changes: NodeChange<FunnelStageNode>[]) => void
+  onPaneClick: () => void
 }
 
 export function FunnelCanvas({
   edges,
   isValidConnection,
   nodes,
+  onNodeClick,
   onConnect,
   onEdgesChange,
   onNodesChange,
+  onPaneClick,
 }: FunnelCanvasProps) {
   return (
     <div className="neo-dot-grid h-full w-full bg-[linear-gradient(180deg,#fff6ec_0%,#f5ebfa_100%)]">
@@ -50,9 +55,11 @@ export function FunnelCanvas({
         minZoom={0.5}
         nodeTypes={nodeTypes}
         nodes={nodes}
+        onNodeClick={onNodeClick}
         onConnect={onConnect}
         onEdgesChange={onEdgesChange}
         onNodesChange={onNodesChange}
+        onPaneClick={onPaneClick}
         panOnScroll
         proOptions={{ hideAttribution: true }}
       >

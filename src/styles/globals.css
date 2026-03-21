@@ -167,6 +167,22 @@ textarea {
   background-size: 20px 20px;
 }
 
+.neo-field {
+  width: 100%;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  background: #fff6ec;
+  color: var(--foreground);
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  outline: none;
+}
+
+.neo-field:focus {
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
 .react-flow__renderer,
 .react-flow__pane {
   cursor: grab;
@@ -208,6 +224,12 @@ textarea {
 .stage-node {
   border: 3px solid var(--ink);
   box-shadow: 8px 8px 0 var(--ink);
+}
+
+.stage-node--selected {
+  box-shadow:
+    8px 8px 0 var(--ink),
+    0 0 0 5px #ffcf56;
 }
 
 .stage-node__handle {

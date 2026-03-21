@@ -6,11 +6,15 @@ import { BarChart3 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import type { FunnelStageNode } from '@/features/funnel/types'
+import { cn } from '@/lib/utils'
 
-export function StageNode({ data }: NodeProps<FunnelStageNode>) {
+export function StageNode({ data, selected }: NodeProps<FunnelStageNode>) {
   return (
     <Card
-      className="stage-node w-[264px] rounded-[24px] bg-[#fff6ec]"
+      className={cn(
+        'stage-node w-[264px] rounded-[24px] bg-[#fff6ec]',
+        selected && 'stage-node--selected',
+      )}
       style={{ '--stage-accent': data.accent } as CSSProperties}
     >
       <Handle className="stage-node__handle" position={Position.Left} type="target" />
