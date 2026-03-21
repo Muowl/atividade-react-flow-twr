@@ -1,3 +1,4 @@
+import { ReactFlowProvider } from '@xyflow/react'
 import { Activity, Database, Workflow } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
@@ -139,7 +140,9 @@ export default function App() {
             </div>
           </CardHeader>
           <CardContent className="h-[560px] p-0">
-            <FunnelCanvas />
+            <ReactFlowProvider>
+              <FunnelCanvas />
+            </ReactFlowProvider>
           </CardContent>
         </Card>
       </section>
