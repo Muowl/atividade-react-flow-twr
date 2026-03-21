@@ -7,8 +7,8 @@ import {
   type Connection,
   type Edge,
 } from '@xyflow/react'
-import { Database, Link2, PencilLine, Trash2, Workflow } from 'lucide-react'
-import { useState } from 'react'
+import { Database, Link2, PencilLine, RotateCcw, Trash2, Workflow } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -26,23 +26,33 @@ import {
   createStageNode,
   stageDefinitions,
 } from '@/features/funnel/data/stage-catalog'
-import { initialEdges, initialNodes } from '@/features/funnel/data/initial-elements'
 import { isValidFunnelConnection } from '@/features/funnel/lib/connection-validation'
+import {
+  clearStoredFlow,
+  getDefaultFlow,
+  readStoredFlow,
+  writeStoredFlow,
+} from '@/features/funnel/lib/storage'
 import type { FunnelStageType } from '@/features/funnel/types'
 
 const baseItems = [
   'Seleção de etapa direto no canvas.',
-  'Edição lateral sem recriar o nó.',
+  'Persistência local automática no navegador.',
   'Exclusão de etapa e conexão com confirmação.',
 ]
 
 export default function App() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+  const [initialFlow] = useState(() => readStoredFlow())
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialFlow.nodes)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialFlow.edges)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(
-    initialNodes[0]?.id ?? null,
+    initialFlow.nodes[0]?.id ?? null,
   )
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null)
+
+  useEffect(() => {
+    writeStoredFlow({ nodes, edges })
+  }, [edges, nodes])
 
   const selectedNode = nodes.find((node) => node.id === selectedNodeId) ?? null
   const selectedEdge = edges.find((edge) => edge.id === selectedEdgeId) ?? null
@@ -182,6 +192,22 @@ export default function App() {
     setSelectedEdgeId(null)
   }
 
+  const handleResetFlow = () => {
+    const confirmed = window.confirm('Restaurar o funil inicial salvo no projeto?')
+
+    if (!confirmed) {
+      return
+    }
+
+    const defaultFlow = getDefaultFlow()
+
+    clearStoredFlow()
+    setNodes(defaultFlow.nodes)
+    setEdges(defaultFlow.edges)
+    setSelectedNodeId(defaultFlow.nodes[0]?.id ?? null)
+    setSelectedEdgeId(null)
+  }
+
   return (
     <ReactFlowProvider>
       <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
@@ -196,12 +222,12 @@ export default function App() {
                 Editor visual
               </h1>
               <p className="max-w-2xl text-sm leading-6 text-primary-foreground/88">
-                Selecione uma etapa ou conexão para editar e remover com clareza.
+                O funil fica salvo no navegador e volta automaticamente ao recarregar.
               </p>
             </div>
           </div>
 
-          <div className="flex max-w-[40rem] flex-col gap-3">
+          <div className="flex max-w-[44rem] flex-col gap-3">
             <div className="flex flex-wrap items-center gap-3">
               <div className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-3 text-[#102b3f]">
                 <span className="block text-[11px] font-bold uppercase tracking-[0.12em]">
@@ -215,6 +241,15 @@ export default function App() {
                 </span>
                 <strong className="block text-xl font-bold">{edges.length}</strong>
               </div>
+              <Button
+                className="bg-[#fff6ec] text-[#102b3f]"
+                size="sm"
+                variant="secondary"
+                onClick={handleResetFlow}
+              >
+                <RotateCcw className="mr-2 size-4" />
+                Resetar fluxo
+              </Button>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -409,7 +444,7 @@ export default function App() {
               <div className="space-y-1">
                 <CardTitle>Fluxo</CardTitle>
                 <CardDescription>
-                  Clique em uma etapa para editar ou em uma conexão para remover.
+                  O estado do canvas é salvo automaticamente no navegador.
                 </CardDescription>
               </div>
             </CardHeader>
