@@ -1,43 +1,38 @@
 import {
-  addEdge,
   Background,
   ConnectionLineType,
   Controls,
-  MarkerType,
   MiniMap,
   ReactFlow,
-  useEdgesState,
-  useNodesState,
   type Connection,
+  type Edge,
+  type NodeChange,
+  type EdgeChange,
   type NodeTypes,
 } from '@xyflow/react'
 
 import { StageNode } from '@/features/funnel/components/stage-node'
-import { initialEdges, initialNodes } from '@/features/funnel/data/initial-elements'
+import type { FunnelStageNode } from '@/features/funnel/types'
 
 const nodeTypes = {
   stage: StageNode,
 } satisfies NodeTypes
 
-export function FunnelCanvas() {
-  const [nodes, , onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+type FunnelCanvasProps = {
+  edges: Edge[]
+  nodes: FunnelStageNode[]
+  onConnect: (connection: Connection) => void
+  onEdgesChange: (changes: EdgeChange[]) => void
+  onNodesChange: (changes: NodeChange<FunnelStageNode>[]) => void
+}
 
-  const handleConnect = (connection: Connection) => {
-    setEdges((currentEdges) =>
-      addEdge(
-        {
-          ...connection,
-          type: 'smoothstep',
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-          },
-        },
-        currentEdges,
-      ),
-    )
-  }
-
+export function FunnelCanvas({
+  edges,
+  nodes,
+  onConnect,
+  onEdgesChange,
+  onNodesChange,
+}: FunnelCanvasProps) {
   return (
     <div className="neo-dot-grid h-full w-full bg-[linear-gradient(180deg,#fff6ec_0%,#f5ebfa_100%)]">
       <ReactFlow
@@ -46,15 +41,12 @@ export function FunnelCanvas() {
         defaultEdgeOptions={{
           type: 'smoothstep',
           animated: false,
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-          },
         }}
         edges={edges}
         minZoom={0.5}
         nodeTypes={nodeTypes}
         nodes={nodes}
-        onConnect={handleConnect}
+        onConnect={onConnect}
         onEdgesChange={onEdgesChange}
         onNodesChange={onNodesChange}
         panOnScroll

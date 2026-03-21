@@ -1,75 +1,41 @@
 import { MarkerType, type Edge } from '@xyflow/react'
 
+import { createStageNode } from '@/features/funnel/data/stage-catalog'
 import type { FunnelStageNode } from '@/features/funnel/types'
 
 export const initialNodes: FunnelStageNode[] = [
-  {
-    id: 'ad',
-    type: 'stage',
-    position: { x: 40, y: 180 },
-    data: {
-      title: 'Anúncio',
-      kind: 'Aquisição',
-      metricLabel: 'Cliques',
-      metricValue: '12,4k',
-      accent: '#6247AA',
-    },
-  },
-  {
-    id: 'landing-page',
-    type: 'stage',
-    position: { x: 320, y: 80 },
-    data: {
-      title: 'Landing Page',
-      kind: 'Conversão inicial',
-      metricLabel: 'Visitas',
-      metricValue: '7,9k',
-      accent: '#A06CD5',
-    },
-  },
-  {
-    id: 'form',
-    type: 'stage',
-    position: { x: 620, y: 180 },
-    data: {
-      title: 'Formulário',
-      kind: 'Captação',
-      metricLabel: 'Leads',
-      metricValue: '1,8k',
-      accent: '#8B5FBF',
-    },
-  },
-  {
-    id: 'checkout',
-    type: 'stage',
-    position: { x: 920, y: 80 },
-    data: {
-      title: 'Checkout',
-      kind: 'Oferta',
-      metricLabel: 'Inícios',
-      metricValue: '620',
-      accent: '#102B3F',
-    },
-  },
-  {
-    id: 'thank-you',
-    type: 'stage',
-    position: { x: 1220, y: 180 },
-    data: {
-      title: 'Página de Obrigado',
-      kind: 'Pós-conversão',
-      metricLabel: 'Vendas',
-      metricValue: '214',
-      accent: '#062726',
-    },
-  },
+  createStageNode('ad', [], {
+    index: 0,
+    positionY: 180,
+    metricValue: '12,4k',
+  }),
+  createStageNode('landing-page', [], {
+    index: 0,
+    positionY: 80,
+    metricValue: '7,9k',
+  }),
+  createStageNode('form', [], {
+    index: 0,
+    positionY: 180,
+    metricValue: '1,8k',
+  }),
+  createStageNode('checkout', [], {
+    index: 0,
+    positionY: 80,
+    metricValue: '620',
+  }),
+  createStageNode('thank-you', [], {
+    index: 0,
+    positionY: 180,
+    metricValue: '214',
+  }),
 ]
 
 export const initialEdges: Edge[] = [
   {
     id: 'ad-landing-page',
-    source: 'ad',
-    target: 'landing-page',
+    source: initialNodes[0].id,
+    target: initialNodes[1].id,
     type: 'smoothstep',
     markerEnd: {
       type: MarkerType.ArrowClosed,
@@ -77,8 +43,8 @@ export const initialEdges: Edge[] = [
   },
   {
     id: 'landing-page-form',
-    source: 'landing-page',
-    target: 'form',
+    source: initialNodes[1].id,
+    target: initialNodes[2].id,
     type: 'smoothstep',
     markerEnd: {
       type: MarkerType.ArrowClosed,
@@ -86,8 +52,8 @@ export const initialEdges: Edge[] = [
   },
   {
     id: 'form-checkout',
-    source: 'form',
-    target: 'checkout',
+    source: initialNodes[2].id,
+    target: initialNodes[3].id,
     type: 'smoothstep',
     markerEnd: {
       type: MarkerType.ArrowClosed,
@@ -95,8 +61,8 @@ export const initialEdges: Edge[] = [
   },
   {
     id: 'checkout-thank-you',
-    source: 'checkout',
-    target: 'thank-you',
+    source: initialNodes[3].id,
+    target: initialNodes[4].id,
     type: 'smoothstep',
     markerEnd: {
       type: MarkerType.ArrowClosed,
