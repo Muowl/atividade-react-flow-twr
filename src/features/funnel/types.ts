@@ -7,22 +7,28 @@ export type FunnelStageType =
   | 'checkout'
   | 'thank-you'
 
+export type FunnelStageMetric = {
+  label: string
+  value: string
+}
+
 export type FunnelStageData = {
   stageType: FunnelStageType
   title: string
   kind: string
-  metricLabel: string
-  metricValue: string
   accent: string
+  metrics: FunnelStageMetric[]
 }
 
 export type FunnelStageDefinition = {
   type: FunnelStageType
   label: string
   kind: string
-  metricLabel: string
   accent: string
-  sampleValues: string[]
+  metrics: Array<{
+    label: string
+    sampleValues: string[]
+  }>
   canvasX: number
 }
 

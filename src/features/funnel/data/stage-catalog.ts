@@ -1,5 +1,6 @@
 import type {
   FunnelStageDefinition,
+  FunnelStageMetric,
   FunnelStageNode,
   FunnelStageType,
 } from '@/features/funnel/types'
@@ -9,45 +10,85 @@ export const stageDefinitions: Record<FunnelStageType, FunnelStageDefinition> = 
     type: 'ad',
     label: 'Anúncio',
     kind: 'Aquisição',
-    metricLabel: 'Cliques',
     accent: '#6247AA',
-    sampleValues: ['12,4k', '9,8k', '15,1k', '11,6k'],
+    metrics: [
+      {
+        label: 'Cliques',
+        sampleValues: ['12,4k', '9,8k', '15,1k', '11,6k'],
+      },
+      {
+        label: 'CTR',
+        sampleValues: ['3,8%', '2,9%', '4,2%', '3,4%'],
+      },
+    ],
     canvasX: 40,
   },
   'landing-page': {
     type: 'landing-page',
     label: 'Landing Page',
     kind: 'Conversão inicial',
-    metricLabel: 'Visitas',
     accent: '#A06CD5',
-    sampleValues: ['7,9k', '6,3k', '8,8k', '7,1k'],
+    metrics: [
+      {
+        label: 'Visitas',
+        sampleValues: ['7,9k', '6,3k', '8,8k', '7,1k'],
+      },
+      {
+        label: 'Conversões',
+        sampleValues: ['1,2k', '980', '1,5k', '1,1k'],
+      },
+    ],
     canvasX: 320,
   },
   form: {
     type: 'form',
     label: 'Formulário',
     kind: 'Captação',
-    metricLabel: 'Leads',
     accent: '#8B5FBF',
-    sampleValues: ['1,8k', '1,2k', '2,1k', '1,5k'],
+    metrics: [
+      {
+        label: 'Leads',
+        sampleValues: ['1,8k', '1,2k', '2,1k', '1,5k'],
+      },
+      {
+        label: 'Taxa envio',
+        sampleValues: ['22%', '19%', '24%', '21%'],
+      },
+    ],
     canvasX: 620,
   },
   checkout: {
     type: 'checkout',
     label: 'Checkout',
     kind: 'Oferta',
-    metricLabel: 'Inícios',
     accent: '#102B3F',
-    sampleValues: ['620', '410', '730', '540'],
+    metrics: [
+      {
+        label: 'Inícios',
+        sampleValues: ['620', '410', '730', '540'],
+      },
+      {
+        label: 'Compras',
+        sampleValues: ['214', '176', '248', '201'],
+      },
+    ],
     canvasX: 920,
   },
   'thank-you': {
     type: 'thank-you',
     label: 'Página de Obrigado',
     kind: 'Pós-conversão',
-    metricLabel: 'Vendas',
     accent: '#062726',
-    sampleValues: ['214', '176', '248', '201'],
+    metrics: [
+      {
+        label: 'Vendas',
+        sampleValues: ['214', '176', '248', '201'],
+      },
+      {
+        label: 'Receita',
+        sampleValues: ['R$ 18k', 'R$ 14k', 'R$ 21k', 'R$ 16k'],
+      },
+    ],
     canvasX: 1220,
   },
 }
@@ -63,7 +104,20 @@ type CreateStageNodeOptions = {
   index: number
   positionY?: number
   title?: string
-  metricValue?: string
+  metrics?: string[]
+}
+
+function buildMetrics(
+  definition: FunnelStageDefinition,
+  index: number,
+  overrideMetrics?: string[],
+) {
+  return definition.metrics.map((metric, metricIndex) => ({
+    label: metric.label,
+    value:
+      overrideMetrics?.[metricIndex] ??
+      metric.sampleValues[index % metric.sampleValues.length],
+  })) satisfies FunnelStageMetric[]
 }
 
 export function createStageNode(
@@ -75,9 +129,6 @@ export function createStageNode(
   const stageNodes = existingNodes.filter((node) => node.data.stageType === stageType)
   const stageCount = stageNodes.length + 1
   const stackedRow = Math.max(stageNodes.length - 1, 0)
-  const sampleValue =
-    options.metricValue ??
-    definition.sampleValues[options.index % definition.sampleValues.length]
 
   return {
     id: `${stageType}-${stageCount}-${existingNodes.length + 1}`,
@@ -88,11 +139,12 @@ export function createStageNode(
     },
     data: {
       stageType,
-      title: options.title ?? (stageCount > 1 ? `${definition.label} ${stageCount}` : definition.label),
+      title:
+        options.title ??
+        (stageCount > 1 ? `${definition.label} ${stageCount}` : definition.label),
       kind: definition.kind,
-      metricLabel: definition.metricLabel,
-      metricValue: sampleValue,
       accent: definition.accent,
+      metrics: buildMetrics(definition, options.index, options.metrics),
     },
   } satisfies FunnelStageNode
 }

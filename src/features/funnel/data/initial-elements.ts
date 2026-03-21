@@ -7,27 +7,27 @@ export const initialNodes: FunnelStageNode[] = [
   createStageNode('ad', [], {
     index: 0,
     positionY: 180,
-    metricValue: '12,4k',
+    metrics: ['12,4k', '3,8%'],
   }),
   createStageNode('landing-page', [], {
     index: 0,
     positionY: 80,
-    metricValue: '7,9k',
+    metrics: ['7,9k', '1,2k'],
   }),
   createStageNode('form', [], {
     index: 0,
     positionY: 180,
-    metricValue: '1,8k',
+    metrics: ['1,8k', '22%'],
   }),
   createStageNode('checkout', [], {
     index: 0,
     positionY: 80,
-    metricValue: '620',
+    metrics: ['620', '214'],
   }),
   createStageNode('thank-you', [], {
     index: 0,
     positionY: 180,
-    metricValue: '214',
+    metrics: ['214', 'R$ 18k'],
   }),
 ]
 
