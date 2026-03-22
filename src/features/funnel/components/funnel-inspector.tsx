@@ -36,7 +36,7 @@ export function FunnelInspector({
 }: FunnelInspectorProps) {
   return (
     <Card className="bg-[#ffcf56]">
-      <CardHeader className="space-y-3">
+      <CardHeader className="space-y-2 p-4">
         <div className="flex flex-wrap items-center gap-2 text-foreground">
           {selectedEdge ? (
             <Link2 className="size-4 text-accent" />
@@ -60,7 +60,7 @@ export function FunnelInspector({
               : 'Selecione um nó ou conexão no canvas para abrir ações.'}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 px-4 pb-4">
         {selectedNode ? (
           <>
             <div className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-3 text-foreground">
@@ -81,7 +81,7 @@ export function FunnelInspector({
               </label>
               <input
                 id="stage-name"
-                className="neo-field"
+                className="neo-field transition-shadow duration-200"
                 value={selectedNode.data.title}
                 onChange={(event) => onSelectedNodeNameChange(event.target.value)}
               />
@@ -96,7 +96,7 @@ export function FunnelInspector({
               </label>
               <select
                 id="stage-type"
-                className="neo-field"
+                className="neo-field transition-shadow duration-200"
                 value={selectedNode.data.stageType}
                 onChange={(event) =>
                   onSelectedNodeTypeChange(event.target.value as FunnelStageType)
@@ -120,7 +120,7 @@ export function FunnelInspector({
                     {metric.label}
                   </label>
                   <input
-                    className="neo-field"
+                    className="neo-field transition-shadow duration-200"
                     value={metric.value}
                     onChange={(event) => onSelectedMetricChange(index, event.target.value)}
                   />

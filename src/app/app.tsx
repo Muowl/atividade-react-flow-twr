@@ -1,6 +1,5 @@
 import { ReactFlowProvider } from '@xyflow/react'
 
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { FunnelCanvas } from '@/features/funnel/components/funnel-canvas'
 import { FunnelInspector } from '@/features/funnel/components/funnel-inspector'
@@ -14,19 +13,15 @@ export default function App() {
   return (
     <ReactFlowProvider>
       <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <header className="neo-panel flex flex-col gap-4 rounded-[28px] bg-primary p-5 text-primary-foreground lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge className="bg-[#ffcf56] text-[#062726]">TWR</Badge>
-              <Badge className="bg-[#fff6ec] text-[#102b3f]">Funil de campanhas</Badge>
-            </div>
-            <div className="space-y-1">
-              <h1 className="font-display text-3xl leading-none tracking-[0.01em] sm:text-4xl">
+        <header className="neo-panel flex flex-col gap-3 rounded-[24px] bg-primary px-5 py-4 text-primary-foreground">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <div className="flex items-center gap-3">
+              <h1 className="font-display text-xl leading-none tracking-[0.01em] sm:text-2xl">
                 Editor visual
               </h1>
-              <p className="max-w-2xl text-sm leading-6 text-primary-foreground/88">
-                O funil fica salvo no navegador e volta automaticamente ao recarregar.
-              </p>
+              <span className="hidden text-xs text-primary-foreground/50 sm:inline">
+                Salvo automaticamente
+              </span>
             </div>
           </div>
 

@@ -12,7 +12,7 @@ export function StageNode({ data, selected }: NodeProps<FunnelStageNode>) {
   return (
     <Card
       className={cn(
-        'stage-node w-[264px] rounded-[24px] bg-[#fff6ec]',
+        'stage-node w-[264px] overflow-hidden rounded-[24px] bg-[#fff6ec]',
         selected && 'stage-node--selected',
       )}
       style={{ '--stage-accent': data.accent } as CSSProperties}

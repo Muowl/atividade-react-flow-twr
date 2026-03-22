@@ -98,45 +98,14 @@ html {
 }
 
 body {
-  position: relative;
   min-height: 100vh;
-  background:
-    linear-gradient(90deg, transparent 0 calc(100% - 18px), rgba(6, 39, 38, 0.08) calc(100% - 18px) 100%),
-    linear-gradient(180deg, #e2cfea 0 18%, #f7f0fb 18% 74%, #d7eced 74% 100%);
+  background: #e2cfea;
   color: var(--foreground);
   font-family: var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-body::before,
-body::after {
-  content: "";
-  position: fixed;
-  z-index: 0;
-  border: 4px solid var(--ink);
-  box-shadow: 10px 10px 0 var(--ink);
-  pointer-events: none;
-}
-
-body::before {
-  top: 22px;
-  right: 36px;
-  height: 88px;
-  width: 88px;
-  background: var(--panel-violet);
-  transform: rotate(11deg);
-}
-
-body::after {
-  left: 24px;
-  bottom: 24px;
-  height: 54px;
-  width: 170px;
-  background: #ffcf56;
-  transform: rotate(-8deg);
 }
 
 #root {
@@ -154,11 +123,13 @@ textarea {
 .neo-panel {
   border: 3px solid var(--ink);
   box-shadow: 8px 8px 0 var(--ink);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .neo-inset {
   border: 3px solid var(--ink);
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.28);
+  transition: box-shadow 0.2s ease;
 }
 
 .neo-dot-grid {
@@ -173,14 +144,16 @@ textarea {
   border-radius: 18px;
   background: #fff6ec;
   color: var(--foreground);
-  padding: 0.85rem 1rem;
-  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
   font-weight: 500;
   outline: none;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
 }
 
 .neo-field:focus {
   box-shadow: 4px 4px 0 var(--ink);
+  transform: translate(-1px, -1px);
 }
 
 .react-flow__renderer,
@@ -196,6 +169,7 @@ textarea {
 .react-flow__edge-path {
   stroke: var(--ink);
   stroke-width: 3;
+  transition: stroke 0.2s ease;
 }
 
 .react-flow__attribution {
@@ -215,15 +189,23 @@ textarea {
   color: var(--foreground);
   box-shadow: 4px 4px 0 var(--ink);
   border-radius: 14px;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .react-flow__controls-button:hover {
   background: white;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
 }
 
 .stage-node {
   border: 3px solid var(--ink);
   box-shadow: 8px 8px 0 var(--ink);
+  transition: box-shadow 0.2s ease;
+}
+
+.stage-node:hover {
+  box-shadow: 10px 10px 0 var(--ink);
 }
 
 .stage-node--selected {
@@ -238,3 +220,6 @@ textarea {
   border: 3px solid var(--ink);
   background: var(--stage-accent);
 }
+
+
+
