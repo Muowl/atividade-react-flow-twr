@@ -5,29 +5,24 @@ import type { FunnelStageNode } from '@/features/funnel/types'
 
 export const initialNodes: FunnelStageNode[] = [
   createStageNode('ad', [], {
-    index: 0,
     positionY: 180,
-    metrics: ['12,4k', '3,8%'],
+    presetIndex: 0,
   }),
   createStageNode('landing-page', [], {
-    index: 0,
     positionY: 80,
-    metrics: ['7,9k', '1,2k'],
+    presetIndex: 0,
   }),
   createStageNode('form', [], {
-    index: 0,
     positionY: 180,
-    metrics: ['1,8k', '22%'],
+    presetIndex: 0,
   }),
   createStageNode('checkout', [], {
-    index: 0,
     positionY: 80,
-    metrics: ['620', '214'],
+    presetIndex: 0,
   }),
   createStageNode('thank-you', [], {
-    index: 0,
     positionY: 180,
-    metrics: ['214', 'R$ 18k'],
+    presetIndex: 0,
   }),
 ]
 

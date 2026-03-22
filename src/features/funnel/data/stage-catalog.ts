@@ -14,12 +14,12 @@ export const stageDefinitions: Record<FunnelStageType, FunnelStageDefinition> = 
     accent: '#6247AA',
     metrics: [
       {
-        label: 'Cliques',
-        sampleValues: ['12,4k', '9,8k', '15,1k', '11,6k'],
+        label: 'Impressões',
+        sampleValues: ['128k', '96k', '142k', '108k'],
       },
       {
-        label: 'CTR',
-        sampleValues: ['3,8%', '2,9%', '4,2%', '3,4%'],
+        label: 'Cliques',
+        sampleValues: ['12,4k', '9,8k', '15,1k', '11,6k'],
       },
     ],
     canvasX: 40,
@@ -32,11 +32,11 @@ export const stageDefinitions: Record<FunnelStageType, FunnelStageDefinition> = 
     metrics: [
       {
         label: 'Visitas',
-        sampleValues: ['7,9k', '6,3k', '8,8k', '7,1k'],
+        sampleValues: ['12,4k', '9,8k', '15,1k', '11,6k'],
       },
       {
-        label: 'Conversões',
-        sampleValues: ['1,2k', '980', '1,5k', '1,1k'],
+        label: 'Leads',
+        sampleValues: ['1,8k', '1,2k', '2,1k', '1,5k'],
       },
     ],
     canvasX: 320,
@@ -52,8 +52,8 @@ export const stageDefinitions: Record<FunnelStageType, FunnelStageDefinition> = 
         sampleValues: ['1,8k', '1,2k', '2,1k', '1,5k'],
       },
       {
-        label: 'Taxa envio',
-        sampleValues: ['22%', '19%', '24%', '21%'],
+        label: 'Qualificados',
+        sampleValues: ['620', '410', '730', '540'],
       },
     ],
     canvasX: 620,
@@ -87,7 +87,7 @@ export const stageDefinitions: Record<FunnelStageType, FunnelStageDefinition> = 
       },
       {
         label: 'Receita',
-        sampleValues: ['R$ 18k', 'R$ 14k', 'R$ 21k', 'R$ 16k'],
+        sampleValues: ['R$ 18,1k', 'R$ 14,9k', 'R$ 21,4k', 'R$ 17,2k'],
       },
     ],
     canvasX: 1220,
@@ -102,28 +102,28 @@ export const creatableStageTypes: FunnelStageType[] = [
 ]
 
 type CreateStageNodeOptions = {
-  index: number
   positionY?: number
+  presetIndex?: number
   title?: string
   metrics?: string[]
 }
 
 function buildMetrics(
   definition: FunnelStageDefinition,
-  index: number,
+  presetIndex: number,
   overrideMetrics?: string[],
 ): FunnelStageMetric[] {
   return definition.metrics.map((metric, metricIndex) => ({
     label: metric.label,
     value:
       overrideMetrics?.[metricIndex] ??
-      metric.sampleValues[index % metric.sampleValues.length],
+      metric.sampleValues[presetIndex % metric.sampleValues.length],
   }))
 }
 
 export function createStageData(
   stageType: FunnelStageType,
-  index: number,
+  presetIndex: number,
   options?: {
     title?: string
     metrics?: string[]
@@ -136,19 +136,20 @@ export function createStageData(
     title: options?.title ?? definition.label,
     kind: definition.kind,
     accent: definition.accent,
-    metrics: buildMetrics(definition, index, options?.metrics),
+    metrics: buildMetrics(definition, presetIndex, options?.metrics),
   }
 }
 
 export function createStageNode(
   stageType: FunnelStageType,
   existingNodes: FunnelStageNode[],
-  options: CreateStageNodeOptions = { index: 0 },
+  options: CreateStageNodeOptions = {},
 ) {
   const definition = stageDefinitions[stageType]
   const stageNodes = existingNodes.filter((node) => node.data.stageType === stageType)
   const stageCount = stageNodes.length + 1
   const stackedRow = Math.max(stageNodes.length - 1, 0)
+  const presetIndex = options.presetIndex ?? stageNodes.length
 
   return {
     id: `${stageType}-${stageCount}-${existingNodes.length + 1}`,
@@ -157,7 +158,7 @@ export function createStageNode(
       x: definition.canvasX,
       y: options.positionY ?? 360 + stackedRow * 190,
     },
-    data: createStageData(stageType, options.index, {
+    data: createStageData(stageType, presetIndex, {
       title:
         options.title ??
         (stageCount > 1 ? `${definition.label} ${stageCount}` : definition.label),

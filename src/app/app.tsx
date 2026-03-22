@@ -91,9 +91,7 @@ export default function App() {
 
   const handleAddStage = (stageType: FunnelStageType) => {
     setNodes((currentNodes) => {
-      const newNode = createStageNode(stageType, currentNodes, {
-        index: currentNodes.length,
-      })
+      const newNode = createStageNode(stageType, currentNodes)
 
       setSelectedEdgeId(null)
       setSelectedNodeId(newNode.id)
