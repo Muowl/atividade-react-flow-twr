@@ -99,6 +99,7 @@ export const creatableStageTypes: FunnelStageType[] = [
   'landing-page',
   'form',
   'checkout',
+  'thank-you',
 ]
 
 type CreateStageNodeOptions = {

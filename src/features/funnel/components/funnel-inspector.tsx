@@ -35,7 +35,7 @@ export function FunnelInspector({
   onSelectedNodeTypeChange,
 }: FunnelInspectorProps) {
   return (
-    <Card className="bg-[#ffcf56]">
+    <Card className="self-start bg-[#ffcf56]">
       <CardHeader className="space-y-2 p-4">
         <div className="flex flex-wrap items-center gap-2 text-foreground">
           {selectedEdge ? (
@@ -43,21 +43,21 @@ export function FunnelInspector({
           ) : (
             <PencilLine className="size-4 text-accent" />
           )}
-          <CardTitle>{selectedEdge ? 'Painel da conexão' : 'Painel da etapa'}</CardTitle>
+          <CardTitle>{selectedEdge ? 'Painel da conexao' : 'Painel da etapa'}</CardTitle>
           <Badge className="bg-[#fff6ec] text-[#102b3f]">
             {selectedNode
               ? 'Etapa selecionada'
               : selectedEdge
-                ? 'Conexão selecionada'
-                : 'Sem seleção'}
+                ? 'Conexao selecionada'
+                : 'Sem selecao'}
           </Badge>
         </div>
         <CardDescription>
           {selectedNode
-            ? 'Atualize nome, tipo e métricas simuladas da etapa.'
+            ? 'Atualize nome, tipo e metricas simuladas da etapa.'
             : selectedEdge
-              ? 'Revise a conexão selecionada ou remova-a.'
-              : 'Selecione um nó ou conexão no canvas para abrir ações.'}
+              ? 'Revise a conexao selecionada ou remova-a.'
+              : 'Selecione um no ou conexao no canvas para abrir acoes.'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3 px-4 pb-4">
@@ -112,7 +112,7 @@ export function FunnelInspector({
 
             <div className="space-y-3">
               <span className="block text-[11px] font-bold uppercase tracking-[0.12em] text-foreground">
-                Métricas simuladas
+                Metricas simuladas
               </span>
               {selectedNode.data.metrics.map((metric, index) => (
                 <div key={`${selectedNode.id}-${metric.label}`} className="space-y-2">
@@ -130,7 +130,7 @@ export function FunnelInspector({
 
             <Button
               className="w-full bg-[#f04438] text-white"
-              title="Remove a etapa selecionada e todas as conexões ligadas a ela"
+              title="Remove a etapa selecionada e todas as conexoes ligadas a ela"
               onClick={onDeleteSelectedNode}
             >
               <Trash2 className="mr-2 size-4" />
@@ -161,17 +161,20 @@ export function FunnelInspector({
 
             <Button
               className="w-full bg-[#f04438] text-white"
-              title="Remove apenas a conexão selecionada"
+              title="Remove apenas a conexao selecionada"
               onClick={onDeleteSelectedEdge}
             >
               <Trash2 className="mr-2 size-4" />
-              Remover conexão
+              Remover conexao
             </Button>
           </>
         ) : (
-          <div className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-5 text-sm text-foreground">
-            Nada selecionado. Clique em uma etapa para editar ou em uma conexão
-            para revisar e remover.
+          <div className="neo-inset space-y-2 rounded-[18px] bg-[#fff6ec] px-4 py-4 text-sm text-foreground">
+            <strong className="block text-sm font-bold">Nada selecionado.</strong>
+            <p className="leading-6 text-foreground/88">
+              Clique em uma etapa para editar ou em uma conexao para revisar e
+              remover.
+            </p>
           </div>
         )}
       </CardContent>
