@@ -45,7 +45,21 @@ export function FunnelCanvas({
   onPaneClick,
 }: FunnelCanvasProps) {
   return (
-    <div className="neo-dot-grid h-full w-full bg-[linear-gradient(180deg,#fff6ec_0%,#f5ebfa_100%)]">
+    <div className="neo-dot-grid relative h-full w-full bg-[linear-gradient(180deg,#fff6ec_0%,#f5ebfa_100%)]">
+      {nodes.length === 0 ? (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center p-6">
+          <div className="neo-panel max-w-md rounded-[24px] bg-[#fff6ec] px-6 py-5 text-center text-foreground">
+            <strong className="block text-lg font-bold uppercase tracking-[0.04em]">
+              Nenhuma etapa no funil
+            </strong>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              Use os botões do topo para adicionar anúncio, landing page,
+              formulário ou checkout.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
       <ReactFlow
         fitView
         connectionLineType={ConnectionLineType.SmoothStep}

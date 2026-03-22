@@ -36,9 +36,9 @@ import {
 import type { FunnelStageType } from '@/features/funnel/types'
 
 const baseItems = [
-  'Seleção de etapa direto no canvas.',
+  'Seleção visual clara de etapa e conexão.',
   'Persistência local automática no navegador.',
-  'Exclusão de etapa e conexão com confirmação.',
+  'Ações de criação, edição e exclusão mais explícitas.',
 ]
 
 export default function App() {
@@ -229,13 +229,19 @@ export default function App() {
 
           <div className="flex max-w-[44rem] flex-col gap-3">
             <div className="flex flex-wrap items-center gap-3">
-              <div className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-3 text-[#102b3f]">
+              <div
+                className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-3 text-[#102b3f]"
+                title="Quantidade total de etapas no funil"
+              >
                 <span className="block text-[11px] font-bold uppercase tracking-[0.12em]">
                   Etapas
                 </span>
                 <strong className="block text-xl font-bold">{nodes.length}</strong>
               </div>
-              <div className="neo-inset rounded-[18px] bg-[#ffcf56] px-4 py-3 text-[#062726]">
+              <div
+                className="neo-inset rounded-[18px] bg-[#ffcf56] px-4 py-3 text-[#062726]"
+                title="Quantidade total de conexões entre etapas"
+              >
                 <span className="block text-[11px] font-bold uppercase tracking-[0.12em]">
                   Conexões
                 </span>
@@ -244,11 +250,12 @@ export default function App() {
               <Button
                 className="bg-[#fff6ec] text-[#102b3f]"
                 size="sm"
+                title="Restaura o fluxo inicial e limpa o estado salvo"
                 variant="secondary"
                 onClick={handleResetFlow}
               >
                 <RotateCcw className="mr-2 size-4" />
-                Resetar fluxo
+                Restaurar fluxo
               </Button>
             </div>
 
@@ -258,6 +265,7 @@ export default function App() {
                   key={stageType}
                   className="bg-[#fff6ec] text-[#102b3f]"
                   size="sm"
+                  title={`Adicionar etapa do tipo ${stageDefinitions[stageType].label}`}
                   variant="secondary"
                   onClick={() => handleAddStage(stageType)}
                 >
@@ -265,6 +273,10 @@ export default function App() {
                 </Button>
               ))}
             </div>
+            <p className="text-xs leading-5 text-primary-foreground/80">
+              Dica: clique em uma etapa para editar, em uma conexão para removê-la
+              e no fundo do canvas para limpar a seleção.
+            </p>
           </div>
         </header>
 
@@ -272,31 +284,43 @@ export default function App() {
           <div className="grid gap-4">
             <Card className="bg-[#ffcf56]">
               <CardHeader className="space-y-3">
-                <div className="flex items-center gap-2 text-foreground">
+                <div className="flex flex-wrap items-center gap-2 text-foreground">
                   {selectedEdge ? (
                     <Link2 className="size-4 text-accent" />
                   ) : (
                     <PencilLine className="size-4 text-accent" />
                   )}
-                  <CardTitle>{selectedEdge ? 'Editar conexão' : 'Editar etapa'}</CardTitle>
+                  <CardTitle>{selectedEdge ? 'Painel da conexão' : 'Painel da etapa'}</CardTitle>
+                  <Badge className="bg-[#fff6ec] text-[#102b3f]">
+                    {selectedNode ? 'Etapa selecionada' : selectedEdge ? 'Conexão selecionada' : 'Sem seleção'}
+                  </Badge>
                 </div>
                 <CardDescription>
                   {selectedNode
-                    ? 'Altere os dados da etapa selecionada.'
+                    ? 'Atualize nome, tipo e métricas simuladas da etapa.'
                     : selectedEdge
-                      ? 'Revise ou remova a conexão selecionada.'
-                      : 'Selecione um nó ou conexão no canvas.'}
+                      ? 'Revise a conexão selecionada ou remova-a.'
+                      : 'Selecione um nó ou conexão no canvas para abrir ações.'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {selectedNode ? (
                   <>
+                    <div className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-3 text-foreground">
+                      <span className="block text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                        Etapa ativa
+                      </span>
+                      <strong className="mt-1 block text-base font-bold">
+                        {selectedNode.data.title}
+                      </strong>
+                    </div>
+
                     <div className="space-y-2">
                       <label
                         className="block text-[11px] font-bold uppercase tracking-[0.12em] text-foreground"
                         htmlFor="stage-name"
                       >
-                        Nome
+                        Nome da etapa
                       </label>
                       <input
                         id="stage-name"
@@ -311,7 +335,7 @@ export default function App() {
                         className="block text-[11px] font-bold uppercase tracking-[0.12em] text-foreground"
                         htmlFor="stage-type"
                       >
-                        Tipo
+                        Tipo da etapa
                       </label>
                       <select
                         id="stage-type"
@@ -331,7 +355,7 @@ export default function App() {
 
                     <div className="space-y-3">
                       <span className="block text-[11px] font-bold uppercase tracking-[0.12em] text-foreground">
-                        Métricas
+                        Métricas simuladas
                       </span>
                       {selectedNode.data.metrics.map((metric, index) => (
                         <div key={`${selectedNode.id}-${metric.label}`} className="space-y-2">
@@ -351,6 +375,7 @@ export default function App() {
 
                     <Button
                       className="w-full bg-[#f04438] text-white"
+                      title="Remove a etapa selecionada e todas as conexões ligadas a ela"
                       onClick={handleDeleteSelectedNode}
                     >
                       <Trash2 className="mr-2 size-4" />
@@ -381,6 +406,7 @@ export default function App() {
 
                     <Button
                       className="w-full bg-[#f04438] text-white"
+                      title="Remove apenas a conexão selecionada"
                       onClick={handleDeleteSelectedEdge}
                     >
                       <Trash2 className="mr-2 size-4" />
@@ -389,7 +415,8 @@ export default function App() {
                   </>
                 ) : (
                   <div className="neo-inset rounded-[18px] bg-[#fff6ec] px-4 py-5 text-sm text-foreground">
-                    Clique em uma etapa para editar ou em uma conexão para remover.
+                    Nada selecionado. Clique em uma etapa para editar ou em uma conexão
+                    para revisar e remover.
                   </div>
                 )}
               </CardContent>
@@ -398,10 +425,10 @@ export default function App() {
             <Card className="bg-secondary">
               <CardHeader className="space-y-3">
                 <div className="flex items-center gap-2 text-primary">
-                  <Workflow className="size-4" />
-                  <CardTitle>Base</CardTitle>
+                  <Workflow className="size-4 text-primary" />
+                  <CardTitle>Experiência</CardTitle>
                 </div>
-                <CardDescription>O que já está configurado no projeto.</CardDescription>
+                <CardDescription>Resumo do comportamento atual da interface.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
                 {baseItems.map((item) => (
@@ -448,7 +475,7 @@ export default function App() {
                 </CardDescription>
               </div>
             </CardHeader>
-            <CardContent className="h-[560px] p-0">
+            <CardContent className="h-[560px] p-0 sm:h-[620px]">
               <FunnelCanvas
                 edges={displayedEdges}
                 isValidConnection={handleValidateConnection}
