@@ -2,6 +2,10 @@
 
 Editor visual de funis de campanha construído com **React Flow** e **shadcn/ui**. Permite criar etapas, conectá-las e visualizar métricas simuladas, tudo persistido no navegador.
 
+## Projeto no Vercel
+
+https://atividade-react-flow-twr.vercel.app/
+
 ## Como rodar
 
 ```bash
